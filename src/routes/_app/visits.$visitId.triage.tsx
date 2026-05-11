@@ -18,29 +18,20 @@ function TriageVisit() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    // Récupérer le passage depuis la file d'attente ou via le patient
-    api.get<Passage[]>("/triage/en-attente")
-      .then((list) => {
-        const found = list.find((p) => p.id === Number(visitId));
-        if (found) {
-          setPassage(found);
-          if (found.triage_couleur) setSelected(found.triage_couleur);
-        } else {
-          // Tenter via la liste complète des triages
-          return api.get<{ passage: Passage }[]>("/triages").then((all) => {
-            const t = all.find((x) => x.passage?.id === Number(visitId));
-            if (t?.passage) {
-              setPassage(t.passage);
-              if (t.passage.triage_couleur) setSelected(t.passage.triage_couleur);
-            }
-          });
-        }
+    api
+      .get<Passage>(`/passages/${visitId}`)
+      .then((p) => {
+        setPassage(p);
+        if (p.triage_couleur) setSelected(p.triage_couleur);
       })
-      .catch((e) => toast.error(e?.message ?? "Erreur"));
+      .catch((e) => toast.error(e?.message ?? "Passage introuvable"));
   }, [visitId]);
 
   const submit = async () => {
-    if (!selected) { toast.error("Sélectionnez un niveau de triage"); return; }
+    if (!selected) {
+      toast.error("Sélectionnez un niveau de triage");
+      return;
+    }
     setBusy(true);
     try {
       await api.post("/triages", {
@@ -74,7 +65,10 @@ function TriageVisit() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
+      <Link
+        to="/dashboard"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
+      >
         <ArrowLeft className="h-4 w-4" /> Retour
       </Link>
 
@@ -88,14 +82,44 @@ function TriageVisit() {
         <div className="lg:col-span-1 glass rounded-2xl p-6">
           <h2 className="font-display text-lg font-semibold">Constantes vitales</h2>
           <div className="mt-5 space-y-3">
-            <Vital icon={Heart} label="Pouls" unit="bpm" color="var(--triage-red)" value={vitals.pouls} onChange={(v) => setVitals({ ...vitals, pouls: v })} />
-            <Vital icon={Wind} label="Saturation" unit="%" color="var(--primary)" value={vitals.saturation} onChange={(v) => setVitals({ ...vitals, saturation: v })} />
-            <Vital icon={Thermometer} label="Température" unit="°C" color="var(--triage-orange)" value={vitals.temperature} onChange={(v) => setVitals({ ...vitals, temperature: v })} />
-            <Vital icon={Activity} label="Tension" unit="" color="var(--accent)" value={vitals.tension} onChange={(v) => setVitals({ ...vitals, tension: v })} />
+            <Vital
+              icon={Heart}
+              label="Pouls"
+              unit="bpm"
+              color="var(--triage-red)"
+              value={vitals.pouls}
+              onChange={(v) => setVitals({ ...vitals, pouls: v })}
+            />
+            <Vital
+              icon={Wind}
+              label="Saturation"
+              unit="%"
+              color="var(--primary)"
+              value={vitals.saturation}
+              onChange={(v) => setVitals({ ...vitals, saturation: v })}
+            />
+            <Vital
+              icon={Thermometer}
+              label="Température"
+              unit="°C"
+              color="var(--triage-orange)"
+              value={vitals.temperature}
+              onChange={(v) => setVitals({ ...vitals, temperature: v })}
+            />
+            <Vital
+              icon={Activity}
+              label="Tension"
+              unit=""
+              color="var(--accent)"
+              value={vitals.tension}
+              onChange={(v) => setVitals({ ...vitals, tension: v })}
+            />
           </div>
 
           <div className="mt-5">
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Symptômes observés</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">
+              Symptômes observés
+            </label>
             <textarea
               value={symptomes}
               onChange={(e) => setSymptomes(e.target.value)}
@@ -119,12 +143,23 @@ function TriageVisit() {
                 transition={{ delay: 0.1 + i * 0.07 }}
                 onClick={() => setSelected(k)}
                 className="w-full text-left glass rounded-2xl p-5 relative overflow-hidden transition-all"
-                style={active ? { borderColor: t.color, boxShadow: `0 0 40px -10px ${t.color}` } : {}}
+                style={
+                  active ? { borderColor: t.color, boxShadow: `0 0 40px -10px ${t.color}` } : {}
+                }
               >
-                <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ background: t.color }} />
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-1.5"
+                  style={{ background: t.color }}
+                />
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl flex items-center justify-center font-display font-bold text-lg" style={{ background: `color-mix(in oklab, ${t.color} 20%, transparent)`, color: t.color }}>
+                    <div
+                      className="h-12 w-12 rounded-xl flex items-center justify-center font-display font-bold text-lg"
+                      style={{
+                        background: `color-mix(in oklab, ${t.color} 20%, transparent)`,
+                        color: t.color,
+                      }}
+                    >
                       {t.label[0]}
                     </div>
                     <div>
@@ -132,7 +167,9 @@ function TriageVisit() {
                       <div className="text-xs text-muted-foreground mt-0.5">{t.subtitle}</div>
                     </div>
                   </div>
-                  <div className="font-mono text-2xl font-bold" style={{ color: t.color }}>{t.time}</div>
+                  <div className="font-mono text-2xl font-bold" style={{ color: t.color }}>
+                    {t.time}
+                  </div>
                 </div>
               </motion.button>
             );
@@ -151,7 +188,14 @@ function TriageVisit() {
   );
 }
 
-interface VitalProps { icon: React.ElementType; label: string; unit: string; color: string; value: string; onChange: (v: string) => void; }
+interface VitalProps {
+  icon: React.ElementType;
+  label: string;
+  unit: string;
+  color: string;
+  value: string;
+  onChange: (v: string) => void;
+}
 function Vital({ icon: Icon, label, unit, color, value, onChange }: VitalProps) {
   return (
     <div className="flex items-center gap-3 p-2.5 rounded-xl bg-secondary/40">

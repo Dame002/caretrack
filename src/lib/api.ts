@@ -7,92 +7,42 @@ export const API_BASE_URL =
   (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ||
   "http://localhost:8000/api";
 
+// ─── Token helpers ────────────────────────────────────────────────────────────
 export function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 export function setToken(token: string | null) {
-  if (typeof window === "undefined") return;
-  if (token) window.localStorage.setItem(TOKEN_KEY, token);
-  else window.localStorage.removeItem(TOKEN_KEY);
-}
-
-export class ApiError extends Error {
-  status: number;
-  payload: any;
-  constructor(message: string, status: number, payload?: any) {
-    super(message);
-    this.status = status;
-    this.payload = payload;
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
   }
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const headers: Record<string, string> = {
-    Accept: "application/json",
-    ...((options.headers as Record<string, string>) || {}),
-  };
-  if (options.body && !(options.body instanceof FormData)) {
-    headers["Content-Type"] = "application/json";
-  }
-  const token = getToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+// ─── Types ────────────────────────────────────────────────────────────────────
+export type Role = "infirmier" | "medecin" | "administrateur" | "direction";
+export type TriageCouleur = "rouge" | "orange" | "jaune" | "vert";
+export type PassageStatut =
+  | "en_attente_triage"
+  | "en_attente_medecin"
+  | "en_consultation"
+  | "sorti";
+export type DecisionSortie = "retour_domicile" | "hospitalisation" | "transfert";
 
-  let res: Response;
-  try {
-    res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
-  } catch (e: any) {
-    throw new ApiError(
-      `Impossible de joindre l'API (${API_BASE_URL}). Vérifie que Laravel tourne (php artisan serve).`,
-      0,
-    );
-  }
-
-  const text = await res.text();
-  let data: any = null;
-  if (text) {
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = text;
-    }
-  }
-
-  if (!res.ok) {
-    const msg =
-      (data && (data.message || data.error)) ||
-      `Erreur HTTP ${res.status}`;
-    if (res.status === 401) {
-      // token invalide
-      setToken(null);
-    }
-    throw new ApiError(msg, res.status, data);
-  }
-  return data as T;
-}
-
-export const api = {
-  get: <T>(path: string) => request<T>(path, { method: "GET" }),
-  post: <T>(path: string, body?: any) =>
-    request<T>(path, {
-      method: "POST",
-      body: body ? JSON.stringify(body) : undefined,
-    }),
-  put: <T>(path: string, body?: any) =>
-    request<T>(path, {
-      method: "PUT",
-      body: body ? JSON.stringify(body) : undefined,
-    }),
-  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+export const ROLE_LABELS: Record<Role, string> = {
+  infirmier: "Infirmier",
+  medecin: "Médecin",
+  administrateur: "Administrateur",
+  direction: "Direction",
 };
 
-// === Types métier (calqués sur les modèles Laravel) ===
-
-export type Role = "infirmier" | "medecin" | "administrateur" | "direction";
+export const STATUT_LABELS: Record<PassageStatut, string> = {
+  en_attente_triage: "En attente triage",
+  en_attente_medecin: "Triagé · en attente",
+  en_consultation: "En consultation",
+  sorti: "Sorti",
+};
 
 export interface User {
   id: number;
@@ -100,9 +50,11 @@ export interface User {
   prenom: string;
   email: string;
   role: Role;
-  service_id: number | null;
   actif: boolean;
-  service?: Service | null;
+  service_id: number | null;
+  service?: Service;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Service {
@@ -121,30 +73,25 @@ export interface Patient {
   telephone: string | null;
   contact_urgence: string | null;
   antecedents: string | null;
-  created_at: string;
   passages?: Passage[];
+  created_at: string;
+  updated_at: string;
 }
-
-export type PassageStatut =
-  | "en_attente_triage"
-  | "en_attente_medecin"
-  | "en_consultation"
-  | "sorti";
-
-export type TriageCouleur = "rouge" | "orange" | "jaune" | "vert";
 
 export interface Passage {
   id: number;
   patient_id: number;
-  date_arrivee: string;
-  date_sortie: string | null;
+  patient?: Patient;
   statut: PassageStatut;
   triage_couleur: TriageCouleur | null;
-  motif_sortie?: string | null;
-  patient?: Patient;
-  triage?: Triage | null;
+  date_arrivee: string;
+  date_sortie: string | null;
+  motif_sortie: string | null;
+  triage?: Triage;
   constantes?: Constante[];
   consultations?: Consultation[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Triage {
@@ -154,7 +101,6 @@ export interface Triage {
   couleur: TriageCouleur;
   symptomes: string | null;
   date_triage: string;
-  passage?: Passage;
   user?: User;
 }
 
@@ -176,9 +122,10 @@ export interface Consultation {
   examen_clinique: string | null;
   diagnostic: string | null;
   prescription: string | null;
-  decision_sortie: "retour_domicile" | "hospitalisation" | "transfert" | null;
-  created_at: string;
+  decision_sortie: DecisionSortie | null;
   user?: User;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DashboardStats {
@@ -192,23 +139,58 @@ export interface DashboardStats {
   total_utilisateurs: number;
 }
 
-export const ROLE_LABELS: Record<Role, string> = {
-  administrateur: "Administrateur",
-  medecin: "Médecin",
-  infirmier: "Infirmier",
-  direction: "Direction",
-};
+// ─── Requête générique ────────────────────────────────────────────────────────
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = getToken();
 
-export const STATUT_LABELS: Record<PassageStatut, string> = {
-  en_attente_triage: "En attente de triage",
-  en_attente_medecin: "En attente médecin",
-  en_consultation: "En consultation",
-  sorti: "Sorti",
-};
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...(init.headers as Record<string, string>),
+  };
 
-export const COULEUR_TOKEN: Record<TriageCouleur, string> = {
-  rouge: "var(--triage-red)",
-  orange: "var(--triage-orange)",
-  jaune: "var(--triage-yellow)",
-  vert: "var(--triage-green)",
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers,
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    const message = (body as any)?.message || (body as any)?.error || `Erreur ${res.status}`;
+    throw new Error(message);
+  }
+
+  // 204 No Content → retourne null
+  if (res.status === 204) return null as unknown as T;
+
+  return res.json() as Promise<T>;
+}
+
+// ─── Client API ───────────────────────────────────────────────────────────────
+export const api = {
+  get: <T>(path: string) => request<T>(path, { method: "GET" }),
+
+  post: <T>(path: string, body?: unknown) =>
+    request<T>(path, {
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+
+  put: <T>(path: string, body?: unknown) =>
+    request<T>(path, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+
+  patch: <T>(path: string, body?: unknown) =>
+    request<T>(path, {
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+
+  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };

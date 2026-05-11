@@ -14,7 +14,10 @@ function AppLayout() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3 text-muted-foreground">
-          <div className="h-2 w-2 rounded-full bg-primary pulse-dot" style={{ color: "var(--primary)" }} />
+          <div
+            className="h-2 w-2 rounded-full bg-primary pulse-dot"
+            style={{ color: "var(--primary)" }}
+          />
           Chargement...
         </div>
       </div>

@@ -45,17 +45,17 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+/* ── MODE SOMBRE (défaut) ── */
 :root {
   --radius: 0.875rem;
 
-  /* Deep clinical blue / teal palette */
   --background: oklch(0.16 0.025 240);
   --foreground: oklch(0.97 0.01 220);
 
-  --surface: oklch(0.20 0.028 240);
+  --surface: oklch(0.2 0.028 240);
   --surface-elevated: oklch(0.24 0.03 240);
 
-  --card: oklch(0.20 0.028 240);
+  --card: oklch(0.2 0.028 240);
   --card-foreground: oklch(0.97 0.01 220);
 
   --popover: oklch(0.22 0.03 240);
@@ -68,39 +68,92 @@
   --secondary-foreground: oklch(0.97 0.01 220);
 
   --muted: oklch(0.26 0.03 240);
-  --muted-foreground: oklch(0.70 0.02 230);
+  --muted-foreground: oklch(0.7 0.02 230);
 
-  --accent: oklch(0.65 0.20 280);
+  --accent: oklch(0.65 0.2 280);
   --accent-foreground: oklch(0.98 0.01 220);
 
   --destructive: oklch(0.65 0.24 25);
   --destructive-foreground: oklch(0.98 0.01 220);
 
-  --border: oklch(0.30 0.03 240 / 60%);
+  --border: oklch(0.3 0.03 240 / 60%);
   --input: oklch(0.28 0.03 240);
   --ring: oklch(0.78 0.16 195);
 
-  /* Triage palette — vivid, accessible */
   --triage-red: oklch(0.65 0.25 25);
   --triage-orange: oklch(0.74 0.18 55);
   --triage-yellow: oklch(0.85 0.17 95);
   --triage-green: oklch(0.72 0.18 150);
 
-  --gradient-hero: radial-gradient(ellipse at top left, oklch(0.78 0.16 195 / 0.25), transparent 50%),
-    radial-gradient(ellipse at bottom right, oklch(0.65 0.20 280 / 0.22), transparent 50%);
-  --gradient-primary: linear-gradient(135deg, oklch(0.78 0.16 195), oklch(0.65 0.20 280));
+  --gradient-hero:
+    radial-gradient(ellipse at top left, oklch(0.78 0.16 195 / 0.25), transparent 50%),
+    radial-gradient(ellipse at bottom right, oklch(0.65 0.2 280 / 0.22), transparent 50%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.78 0.16 195), oklch(0.65 0.2 280));
   --gradient-pulse: linear-gradient(135deg, oklch(0.65 0.25 25), oklch(0.74 0.18 55));
 
   --shadow-glow: 0 0 60px -10px oklch(0.78 0.16 195 / 0.5);
-  --shadow-elevated: 0 24px 60px -20px oklch(0.10 0.02 240 / 0.6);
+  --shadow-elevated: 0 24px 60px -20px oklch(0.1 0.02 240 / 0.6);
+}
+
+/* ── MODE CLAIR ── */
+[data-theme="light"] {
+  --background: oklch(0.97 0.008 220);
+  --foreground: oklch(0.15 0.025 240);
+
+  --surface: oklch(0.93 0.01 225);
+  --surface-elevated: oklch(0.9 0.012 225);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.025 240);
+
+  --popover: oklch(0.98 0.006 220);
+  --popover-foreground: oklch(0.15 0.025 240);
+
+  --primary: oklch(0.62 0.16 195);
+  --primary-foreground: oklch(0.98 0.01 220);
+
+  --secondary: oklch(0.91 0.012 225);
+  --secondary-foreground: oklch(0.2 0.025 240);
+
+  --muted: oklch(0.92 0.01 225);
+  --muted-foreground: oklch(0.45 0.02 235);
+
+  --accent: oklch(0.55 0.2 280);
+  --accent-foreground: oklch(0.98 0.01 220);
+
+  --destructive: oklch(0.58 0.24 25);
+  --destructive-foreground: oklch(0.98 0.01 220);
+
+  --border: oklch(0.75 0.015 230 / 60%);
+  --input: oklch(0.88 0.012 225);
+  --ring: oklch(0.62 0.16 195);
+
+  --triage-red: oklch(0.58 0.25 25);
+  --triage-orange: oklch(0.65 0.18 55);
+  --triage-yellow: oklch(0.72 0.17 95);
+  --triage-green: oklch(0.6 0.18 150);
+
+  --gradient-hero:
+    radial-gradient(ellipse at top left, oklch(0.62 0.16 195 / 0.15), transparent 50%),
+    radial-gradient(ellipse at bottom right, oklch(0.55 0.2 280 / 0.12), transparent 50%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.62 0.16 195), oklch(0.55 0.2 280));
+  --gradient-pulse: linear-gradient(135deg, oklch(0.58 0.25 25), oklch(0.65 0.18 55));
+
+  --shadow-glow: 0 0 60px -10px oklch(0.62 0.16 195 / 0.3);
+  --shadow-elevated: 0 24px 60px -20px oklch(0.7 0.02 240 / 0.2);
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.15s ease;
   }
 
-  html, body {
+  html,
+  body {
     background: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -110,11 +163,20 @@
   body {
     background-image:
       radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.78 0.16 195 / 0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 100%, oklch(0.65 0.20 280 / 0.12), transparent);
+      radial-gradient(ellipse 60% 40% at 80% 100%, oklch(0.65 0.2 280 / 0.12), transparent);
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4 {
+  [data-theme="light"] body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.62 0.16 195 / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, oklch(0.55 0.2 280 / 0.06), transparent);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
@@ -135,6 +197,11 @@
     border: 1px solid oklch(1 0 0 / 0.06);
   }
 
+  [data-theme="light"] .glass {
+    background: oklch(0.98 0.005 220 / 0.75);
+    border: 1px solid oklch(0 0 0 / 0.07);
+  }
+
   .glow {
     box-shadow: var(--shadow-glow);
   }
@@ -143,6 +210,13 @@
     background-image:
       linear-gradient(oklch(1 0 0 / 0.04) 1px, transparent 1px),
       linear-gradient(90deg, oklch(1 0 0 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  [data-theme="light"] .grid-bg {
+    background-image:
+      linear-gradient(oklch(0 0 0 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0 0 0 / 0.04) 1px, transparent 1px);
     background-size: 48px 48px;
   }
 
@@ -160,13 +234,23 @@
   }
 
   @keyframes pulse-ring {
-    0% { transform: scale(0.7); opacity: 0.6; }
-    100% { transform: scale(2.2); opacity: 0; }
+    0% {
+      transform: scale(0.7);
+      opacity: 0.6;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
   }
 
   @keyframes scan {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100%); }
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100%);
+    }
   }
   .scanline::before {
     content: "";
@@ -178,7 +262,11 @@
   }
 
   @keyframes ekg {
-    0% { stroke-dashoffset: 1000; }
-    100% { stroke-dashoffset: 0; }
+    0% {
+      stroke-dashoffset: 1000;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
   }
 }

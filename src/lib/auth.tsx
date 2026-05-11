@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api, getToken, setToken, type Role, type User } from "./api";
 
 interface AuthContextValue {
@@ -48,10 +41,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const res = await api.post<{ token: string; user: User; message: string }>(
-        "/auth/login",
-        { email, password },
-      );
+      const res = await api.post<{ token: string; user: User; message: string }>("/auth/login", {
+        email,
+        password,
+      });
       setToken(res.token);
       setUser(res.user);
       return { error: null };
