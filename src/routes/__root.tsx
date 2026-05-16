@@ -81,7 +81,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CareTrack — Gestion des Urgences Médicales" },
+      { title: "CareTrack — SAU" },
       {
         name: "description",
         content:
@@ -89,6 +89,7 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "stylesheet", href: appCss },
       {
         rel: "stylesheet",

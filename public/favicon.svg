@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Fond arrondi sombre -->
+  <rect width="32" height="32" rx="7" fill="#0a0a0f"/>
+
+  <!-- Croix médicale subtile en fond -->
+  <rect x="14" y="6" width="4" height="20" rx="2" fill="#1a2a3a" opacity="0.8"/>
+  <rect x="6" y="14" width="20" height="4" rx="2" fill="#1a2a3a" opacity="0.8"/>
+
+  <!-- Ligne EKG (Activity) -->
+  <polyline
+    points="3,16 7,16 9,10 11,22 13,14 15,18 17,8 19,24 21,16 25,16 29,16"
+    stroke="#3dd6f5"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+
+  <!-- Point rouge pulsant (triage urgence) -->
+  <circle cx="26" cy="8" r="3" fill="#ef4444"/>
+  <circle cx="26" cy="8" r="1.5" fill="#fca5a5"/>
+</svg>

@@ -261,17 +261,6 @@ function Home() {
             {/* ── Gauche ─────────────────────────────── */}
             <div className="space-y-5 text-center lg:text-left">
               {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="inline-flex items-center gap-2 rounded-full border border-triage-red/30 bg-triage-red/10 px-4 py-1.5"
-              >
-                <div className="h-1.5 w-1.5 rounded-full bg-triage-red animate-pulse" />
-                <span className="text-xs font-mono uppercase tracking-widest text-triage-red">
-                  Système de gestion des urgences
-                </span>
-              </motion.div>
 
               {/* Titre */}
               <motion.h1
