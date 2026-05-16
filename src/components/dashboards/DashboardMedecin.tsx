@@ -9,8 +9,9 @@ import {
   ChevronRight,
   RefreshCw,
   Activity,
-  FileText,
+  ClipboardList,
   ArrowRight,
+  Timer,
 } from "lucide-react";
 import { api, type Passage, type DashboardStats, STATUT_LABELS } from "@/lib/api";
 import { EkgLine } from "@/components/EkgLine";
@@ -27,6 +28,23 @@ const TC: Record<string, string> = {
 const PURPLE = "#a855f7";
 const CYAN = "#22d3ee";
 const GREEN = "#4ade80";
+
+function PulseRing({ color }: { color: string }) {
+  return (
+    <span className="relative flex h-2.5 w-2.5">
+      <motion.span
+        className="absolute inline-flex h-full w-full rounded-full opacity-75"
+        style={{ backgroundColor: color }}
+        animate={{ scale: [1, 2], opacity: [0.7, 0] }}
+        transition={{ duration: 1.2, repeat: Infinity }}
+      />
+      <span
+        className="relative inline-flex h-2.5 w-2.5 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+    </span>
+  );
+}
 
 function StatCard({
   icon: Icon,
@@ -173,6 +191,14 @@ export function DashboardMedecin() {
   const toVisit = (id: number) =>
     navigate({ to: "/visits/$visitId", params: { visitId: String(id) } });
 
+  // Temps moyen de consultation (en minutes)
+  const avgTime =
+    consults.length > 0
+      ? Math.round(
+          consults.reduce((acc, p) => acc + minutesSince(p.created_at), 0) / consults.length,
+        )
+      : 0;
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -190,12 +216,9 @@ export function DashboardMedecin() {
       <div className="flex items-start justify-between gap-4">
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-2 mb-1">
-            <div
-              className="h-2 w-2 rounded-full animate-pulse"
-              style={{ backgroundColor: PURPLE }}
-            />
+            <PulseRing color={PURPLE} />
             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-              Espace médecin
+              Espace médecin · SAU
             </span>
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight">
@@ -234,7 +257,7 @@ export function DashboardMedecin() {
         />
         <StatCard
           icon={Users}
-          label="Passages aujourd'hui"
+          label="Mes patients aujourd'hui"
           value={stats?.patients_aujourdhui ?? 0}
           sub="total journée"
           color={CYAN}
@@ -242,17 +265,17 @@ export function DashboardMedecin() {
         />
         <StatCard
           icon={CheckCircle2}
-          label="Sortis aujourd'hui"
+          label="Consultations clôturées"
           value={stats?.sortis_aujourdhui ?? 0}
-          sub="consultations clôturées"
+          sub="depuis 00h00"
           color={GREEN}
           delay={0.15}
         />
         <StatCard
-          icon={Clock}
-          label="En attente"
-          value={stats?.en_attente_triage ?? 0}
-          sub="file triage"
+          icon={Timer}
+          label="Temps moyen"
+          value={`${avgTime} min`}
+          sub="par consultation"
           color="var(--triage-orange)"
           delay={0.2}
         />
@@ -260,7 +283,7 @@ export function DashboardMedecin() {
 
       {/* Corps */}
       <div className="grid lg:grid-cols-3 gap-4">
-        {/* Mes patients */}
+        {/* Mes consultations */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -269,10 +292,7 @@ export function DashboardMedecin() {
         >
           <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
             <div className="flex items-center gap-2.5">
-              <div
-                className="h-2 w-2 rounded-full animate-pulse"
-                style={{ backgroundColor: PURPLE }}
-              />
+              <PulseRing color={PURPLE} />
               <span className="text-sm font-semibold text-foreground">Consultations en cours</span>
               {consults.length > 0 && (
                 <span
@@ -317,7 +337,7 @@ export function DashboardMedecin() {
 
         {/* Panel droit */}
         <div className="space-y-4">
-          {/* Statuts */}
+          {/* Répartition statuts */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -330,12 +350,8 @@ export function DashboardMedecin() {
             <div className="space-y-2.5">
               {[
                 { label: "En cours", value: stats?.en_consultation ?? 0, color: PURPLE },
-                {
-                  label: "En attente",
-                  value: stats?.en_attente_triage ?? 0,
-                  color: "var(--triage-orange)",
-                },
-                { label: "Sortis", value: stats?.sortis_aujourdhui ?? 0, color: GREEN },
+                { label: "Clôturés", value: stats?.sortis_aujourdhui ?? 0, color: GREEN },
+                { label: "Total journée", value: stats?.patients_aujourdhui ?? 0, color: CYAN },
               ].map(({ label, value, color }) => {
                 const total = stats?.patients_aujourdhui ?? 1;
                 const pct = total > 0 ? Math.round((value / total) * 100) : 0;
@@ -362,7 +378,7 @@ export function DashboardMedecin() {
             </div>
           </motion.div>
 
-          {/* Accès rapides */}
+          {/* Accès rapides médecin uniquement */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -374,8 +390,19 @@ export function DashboardMedecin() {
             </div>
             <div className="space-y-2">
               {[
-                { to: "/patients", icon: Users, label: "Tous les patients", color: CYAN },
-                { to: "/patients/new", icon: FileText, label: "Nouveau dossier", color: PURPLE },
+                { to: "/patients", icon: Users, label: "Mes patients du jour", color: CYAN },
+                {
+                  to: "/visits",
+                  icon: ClipboardList,
+                  label: "Historique consultations",
+                  color: PURPLE,
+                },
+                {
+                  to: "/triage",
+                  icon: Clock,
+                  label: "File triage (lecture)",
+                  color: "var(--triage-orange)",
+                },
               ].map(({ to, icon: Icon, label, color }) => (
                 <Link
                   key={to}

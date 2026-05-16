@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppTriageRouteImport } from './routes/_app/triage'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
+import { Route as AppVisitsIndexRouteImport } from './routes/_app/visits.index'
 import { Route as AppPatientsIndexRouteImport } from './routes/_app/patients.index'
 import { Route as AppVisitsNewRouteImport } from './routes/_app/visits.new'
 import { Route as AppPatientsNewRouteImport } from './routes/_app/patients.new'
@@ -55,6 +56,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
 const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVisitsIndexRoute = AppVisitsIndexRouteImport.update({
+  id: '/visits/',
+  path: '/visits/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPatientsIndexRoute = AppPatientsIndexRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/patients/new': typeof AppPatientsNewRoute
   '/visits/new': typeof AppVisitsNewRoute
   '/patients/': typeof AppPatientsIndexRoute
+  '/visits/': typeof AppVisitsIndexRoute
   '/visits/$visitId/triage': typeof AppVisitsVisitIdTriageRoute
   '/visits/$visitId/': typeof AppVisitsVisitIdIndexRoute
 }
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/patients/new': typeof AppPatientsNewRoute
   '/visits/new': typeof AppVisitsNewRoute
   '/patients': typeof AppPatientsIndexRoute
+  '/visits': typeof AppVisitsIndexRoute
   '/visits/$visitId/triage': typeof AppVisitsVisitIdTriageRoute
   '/visits/$visitId': typeof AppVisitsVisitIdIndexRoute
 }
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/_app/patients/new': typeof AppPatientsNewRoute
   '/_app/visits/new': typeof AppVisitsNewRoute
   '/_app/patients/': typeof AppPatientsIndexRoute
+  '/_app/visits/': typeof AppVisitsIndexRoute
   '/_app/visits/$visitId/triage': typeof AppVisitsVisitIdTriageRoute
   '/_app/visits/$visitId/': typeof AppVisitsVisitIdIndexRoute
 }
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/patients/new'
     | '/visits/new'
     | '/patients/'
+    | '/visits/'
     | '/visits/$visitId/triage'
     | '/visits/$visitId/'
   fileRoutesByTo: FileRoutesByTo
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/patients/new'
     | '/visits/new'
     | '/patients'
+    | '/visits'
     | '/visits/$visitId/triage'
     | '/visits/$visitId'
   id:
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/_app/patients/new'
     | '/_app/visits/new'
     | '/_app/patients/'
+    | '/_app/visits/'
     | '/_app/visits/$visitId/triage'
     | '/_app/visits/$visitId/'
   fileRoutesById: FileRoutesById
@@ -236,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/visits/': {
+      id: '/_app/visits/'
+      path: '/visits'
+      fullPath: '/visits/'
+      preLoaderRoute: typeof AppVisitsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/patients/': {
       id: '/_app/patients/'
       path: '/patients'
@@ -289,6 +308,7 @@ interface AppRouteChildren {
   AppPatientsNewRoute: typeof AppPatientsNewRoute
   AppVisitsNewRoute: typeof AppVisitsNewRoute
   AppPatientsIndexRoute: typeof AppPatientsIndexRoute
+  AppVisitsIndexRoute: typeof AppVisitsIndexRoute
   AppVisitsVisitIdTriageRoute: typeof AppVisitsVisitIdTriageRoute
   AppVisitsVisitIdIndexRoute: typeof AppVisitsVisitIdIndexRoute
 }
@@ -301,6 +321,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPatientsNewRoute: AppPatientsNewRoute,
   AppVisitsNewRoute: AppVisitsNewRoute,
   AppPatientsIndexRoute: AppPatientsIndexRoute,
+  AppVisitsIndexRoute: AppVisitsIndexRoute,
   AppVisitsVisitIdTriageRoute: AppVisitsVisitIdTriageRoute,
   AppVisitsVisitIdIndexRoute: AppVisitsVisitIdIndexRoute,
 }

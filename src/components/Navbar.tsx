@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Activity,
   LogOut,
@@ -11,6 +11,7 @@ import {
   Moon,
   Menu,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -18,7 +19,6 @@ import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/useTheme";
 import { ROLE_LABELS } from "@/lib/api";
 
-// ── Couleur & badge par rôle ──────────────────────────────────────────────────
 const ROLE_CONFIG: Record<string, { color: string; badge: string }> = {
   direction: { color: "#f59e0b", badge: "bg-amber-500/15 text-amber-400 border-amber-500/30" },
   administrateur: {
@@ -29,7 +29,6 @@ const ROLE_CONFIG: Record<string, { color: string; badge: string }> = {
   infirmier: { color: "#4ade80", badge: "bg-green-500/15 text-green-400 border-green-500/30" },
 };
 
-// ── Liens par rôle ────────────────────────────────────────────────────────────
 type NavLink = { to: string; label: string; icon: typeof Shield };
 
 const NAV_LINKS: Record<string, NavLink[]> = {
@@ -56,19 +55,18 @@ const NAV_LINKS: Record<string, NavLink[]> = {
   ],
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 export function Navbar() {
   const { user, signOut } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
+  const routerState = useRouterState();
+  const currentPath = routerState.location.pathname;
 
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  // Fermer le drawer si on passe en desktop
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const handler = (e: MediaQueryListEvent) => {
@@ -78,7 +76,6 @@ export function Navbar() {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  // Bloquer le scroll du body quand le drawer est ouvert
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
@@ -89,6 +86,9 @@ export function Navbar() {
   const role = user?.role ?? "medecin";
   const config = ROLE_CONFIG[role] ?? ROLE_CONFIG.medecin;
   const links = NAV_LINKS[role] ?? NAV_LINKS.medecin;
+
+  const ROOT_PATHS = ["/", "/dashboard", "/patients", "/triage", "/admin"];
+  const showBack = !!user && !ROOT_PATHS.includes(currentPath);
 
   const handleLogout = async () => {
     setMobileOpen(false);
@@ -106,7 +106,7 @@ export function Navbar() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="sticky top-0 z-50 glass"
       >
-        {/* Barre de couleur rôle */}
+        {/* Barre couleur rôle */}
         <div
           className="absolute top-0 left-0 right-0 h-[2px]"
           style={{
@@ -130,7 +130,24 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Nav links — desktop uniquement */}
+          {/* Bouton retour — sous-pages uniquement */}
+          <AnimatePresence>
+            {showBack && (
+              <motion.button
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -6 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => window.history.back()}
+                className="hidden md:flex items-center gap-1.5 rounded-lg glass px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Retour
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* Nav links — desktop */}
           {user && (
             <nav className="hidden items-center gap-1 md:flex">
               {links.map(({ to, label, icon: Icon }) => (
@@ -210,7 +227,7 @@ export function Navbar() {
               </Link>
             )}
 
-            {/* Hamburger — mobile uniquement */}
+            {/* Hamburger — mobile */}
             {user && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -235,11 +252,10 @@ export function Navbar() {
         </div>
       </motion.header>
 
-      {/* ── Drawer mobile ─────────────────────────────────────────────────────── */}
+      {/* Drawer mobile */}
       <AnimatePresence>
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               key="backdrop"
               initial={{ opacity: 0 }}
@@ -250,7 +266,6 @@ export function Navbar() {
               onClick={() => setMobileOpen(false)}
             />
 
-            {/* Panneau */}
             <motion.div
               key="drawer"
               initial={{ x: "100%" }}
@@ -262,7 +277,6 @@ export function Navbar() {
                 borderLeft: `1px solid color-mix(in oklab, ${config.color} 20%, transparent)`,
               }}
             >
-              {/* Ligne couleur rôle */}
               <div
                 className="absolute top-0 left-0 right-0 h-[2px]"
                 style={{ background: `linear-gradient(90deg, transparent, ${config.color})` }}
@@ -287,6 +301,22 @@ export function Navbar() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
+
+              {/* Bouton retour mobile */}
+              {showBack && (
+                <div className="px-3 pt-3">
+                  <button
+                    onClick={() => {
+                      setMobileOpen(false);
+                      window.history.back();
+                    }}
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition"
+                  >
+                    <ArrowLeft className="h-4 w-4 shrink-0" />
+                    Retour
+                  </button>
+                </div>
+              )}
 
               {/* Liens nav */}
               <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
@@ -313,7 +343,7 @@ export function Navbar() {
                 ))}
               </nav>
 
-              {/* Footer drawer — logout */}
+              {/* Footer drawer */}
               <div className="px-3 py-4 border-t border-border">
                 <button
                   onClick={handleLogout}

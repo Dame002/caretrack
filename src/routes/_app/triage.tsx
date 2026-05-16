@@ -35,6 +35,7 @@ function BadgeAttente({ minutes }: { minutes: number }) {
 
 function TriagePage() {
   const { isInfirmier, isAdmin } = useAuth();
+  const readOnly = !isInfirmier && !isAdmin;
   const navigate = useNavigate();
   const [passages, setPassages] = useState<Passage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,20 +56,9 @@ function TriagePage() {
 
   useEffect(() => {
     charger();
-    // Rafraîchissement automatique toutes les 60 secondes
     const interval = setInterval(() => charger(), 60_000);
     return () => clearInterval(interval);
   }, []);
-
-  // Garde — seuls infirmiers et admins accèdent à cette page
-  if (!isInfirmier && !isAdmin) {
-    return (
-      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 text-muted-foreground">
-        <ClipboardList className="h-12 w-12 text-triage-orange" />
-        <p className="text-lg font-medium">Accès réservé aux infirmiers</p>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -99,13 +89,20 @@ function TriagePage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            to="/visits/new"
-            className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-medium hover:opacity-90 transition glow flex items-center gap-2 text-sm"
-          >
-            <UserRound className="h-4 w-4" />
-            Nouvelle admission
-          </Link>
+          {readOnly ? (
+            <span className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm font-mono text-amber-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+              Mode observation
+            </span>
+          ) : (
+            <Link
+              to="/visits/new"
+              className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-medium hover:opacity-90 transition glow flex items-center gap-2 text-sm"
+            >
+              <UserRound className="h-4 w-4" />
+              Nouvelle admission
+            </Link>
+          )}
           <button
             onClick={() => charger(true)}
             disabled={refreshing}
@@ -180,15 +177,18 @@ function TriagePage() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="glass rounded-2xl p-5 flex items-center justify-between gap-4 group hover:bg-secondary/20 transition cursor-pointer"
-                  onClick={() =>
-                    navigate({
-                      to: "/visits/$visitId/triage",
-                      params: { visitId: String(passage.id) },
-                    })
-                  }
+                  className={`glass rounded-2xl p-5 flex items-center justify-between gap-4 group transition ${
+                    readOnly ? "cursor-default" : "hover:bg-secondary/20 cursor-pointer"
+                  }`}
+                  onClick={() => {
+                    if (!readOnly)
+                      navigate({
+                        to: "/visits/$visitId/triage",
+                        params: { visitId: String(passage.id) },
+                      });
+                  }}
                 >
-                  {/* Indicateur d'urgence temps */}
+                  {/* Indicateur urgence temps */}
                   <div
                     className="h-full w-1 rounded-full self-stretch min-h-[48px]"
                     style={{
@@ -224,13 +224,15 @@ function TriagePage() {
                     </div>
                   </div>
 
-                  {/* Badge attente + bouton */}
+                  {/* Badge attente + bouton conditionnel */}
                   <div className="flex items-center gap-3 shrink-0">
                     <BadgeAttente minutes={minutes} />
-                    <span className="flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition">
-                      Trier
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
+                    {!readOnly && (
+                      <span className="flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition">
+                        Trier
+                        <ArrowRight className="h-4 w-4" />
+                      </span>
+                    )}
                   </div>
                 </motion.div>
               );
