@@ -1,17 +1,44 @@
 // Mapping triage Manchester adapté aux valeurs Laravel
 import type { TriageCouleur, PassageStatut } from "./api";
 
-export const TRIAGE: Record<TriageCouleur, {
-  label: string;
-  subtitle: string;
-  time: string;
-  deadlineMin: number;
-  color: string;
-}> = {
-  rouge: { label: "Rouge", subtitle: "Immédiat", time: "0 min", deadlineMin: 0, color: "var(--triage-red)" },
-  orange: { label: "Orange", subtitle: "Très urgent", time: "10 min", deadlineMin: 10, color: "var(--triage-orange)" },
-  jaune: { label: "Jaune", subtitle: "Urgent", time: "60 min", deadlineMin: 60, color: "var(--triage-yellow)" },
-  vert: { label: "Vert", subtitle: "Non urgent", time: "120 min", deadlineMin: 120, color: "var(--triage-green)" },
+export const TRIAGE: Record<
+  TriageCouleur,
+  {
+    label: string;
+    subtitle: string;
+    time: string;
+    deadlineMin: number;
+    color: string;
+  }
+> = {
+  rouge: {
+    label: "Rouge",
+    subtitle: "Immédiat",
+    time: "0 min",
+    deadlineMin: 0,
+    color: "var(--triage-red)",
+  },
+  orange: {
+    label: "Orange",
+    subtitle: "Très urgent",
+    time: "10 min",
+    deadlineMin: 10,
+    color: "var(--triage-orange)",
+  },
+  jaune: {
+    label: "Jaune",
+    subtitle: "Urgent",
+    time: "60 min",
+    deadlineMin: 60,
+    color: "var(--triage-yellow)",
+  },
+  vert: {
+    label: "Vert",
+    subtitle: "Non urgent",
+    time: "120 min",
+    deadlineMin: 120,
+    color: "var(--triage-green)",
+  },
 };
 
 export type TriageKey = TriageCouleur;

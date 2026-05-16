@@ -159,12 +159,21 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
 
   if (!res.ok) {
+    if (res.status === 429) {
+      throw new Error("Trop de tentatives. Réessayez dans une minute.");
+    }
+    if (res.status === 401) {
+      setToken(null);
+      throw new Error("Session expirée. Veuillez vous reconnecter.");
+    }
+    if (res.status === 403) {
+      throw new Error("Accès refusé — droits insuffisants.");
+    }
     const body = await res.json().catch(() => ({}));
     const message = (body as any)?.message || (body as any)?.error || `Erreur ${res.status}`;
     throw new Error(message);
   }
 
-  // 204 No Content → retourne null
   if (res.status === 204) return null as unknown as T;
 
   return res.json() as Promise<T>;

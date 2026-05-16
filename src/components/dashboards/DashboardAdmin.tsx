@@ -42,7 +42,7 @@ function StatCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.45 }}
-      className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-5 overflow-hidden"
+      className="glass relative rounded-2xl p-5 overflow-hidden"
     >
       <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: color }} />
       <div
@@ -64,10 +64,10 @@ function StatCard({
       >
         {value}
       </motion.div>
-      <div className="mt-1.5 text-[11px] font-medium text-white/60 uppercase tracking-wider">
+      <div className="mt-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
         {label}
       </div>
-      {sub && <div className="mt-0.5 text-[10px] text-white/30 font-mono">{sub}</div>}
+      {sub && <div className="mt-0.5 text-[10px] text-muted-foreground/60 font-mono">{sub}</div>}
     </motion.div>
   );
 }
@@ -102,7 +102,7 @@ export function DashboardAdmin() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="flex items-center gap-3 text-white/40">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <Database className="h-4 w-4 animate-pulse" style={{ color: BLUE }} />
           <span className="font-mono text-sm">Chargement…</span>
         </div>
@@ -117,14 +117,14 @@ export function DashboardAdmin() {
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-2 mb-1">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: BLUE }} />
-            <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
               Administration
             </span>
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight">
             Bonjour, <span style={{ color: BLUE }}>{user?.prenom ?? "Admin"}</span>
           </h1>
-          <p className="mt-1 text-sm text-white/40 font-mono">
+          <p className="mt-1 text-sm text-muted-foreground font-mono">
             {new Date().toLocaleDateString("fr-FR", {
               weekday: "long",
               day: "numeric",
@@ -140,7 +140,7 @@ export function DashboardAdmin() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
             onClick={load}
-            className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3.5 py-2 text-sm text-white/50 hover:text-white/80 transition"
+            className="flex items-center gap-2 glass rounded-xl px-3.5 py-2 text-sm text-muted-foreground hover:text-foreground transition"
           >
             <RefreshCw className="h-3.5 w-3.5" />
           </motion.button>
@@ -204,27 +204,27 @@ export function DashboardAdmin() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="lg:col-span-2 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden"
+          className="lg:col-span-2 glass rounded-2xl overflow-hidden"
         >
-          <div className="flex items-center justify-between border-b border-white/7 px-5 py-3.5">
+          <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
             <div className="flex items-center gap-2">
               <Users className="h-3.5 w-3.5" style={{ color: BLUE }} />
-              <span className="text-sm font-semibold text-white/80">
+              <span className="text-sm font-semibold text-foreground">
                 Derniers patients enregistrés
               </span>
             </div>
             <Link
               to="/patients"
-              className="text-[11px] font-mono text-white/30 hover:text-white/60 transition flex items-center gap-1"
+              className="text-[11px] font-mono text-muted-foreground hover:text-foreground transition flex items-center gap-1"
             >
               Voir tout <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="divide-y divide-white/4">
+          <div className="divide-y divide-border">
             {patients.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-14 text-center">
-                <Users className="h-8 w-8 text-white/15 mb-3" />
-                <p className="text-sm text-white/25 font-mono">Aucun patient enregistré</p>
+                <Users className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground font-mono">Aucun patient enregistré</p>
               </div>
             ) : (
               patients.map((p, i) => (
@@ -237,7 +237,7 @@ export function DashboardAdmin() {
                   <Link
                     to="/patients/$patientId"
                     params={{ patientId: String(p.id) }}
-                    className="group flex items-center gap-4 px-5 py-3 hover:bg-white/3 transition"
+                    className="group flex items-center gap-4 px-5 py-3 hover:bg-secondary/30 transition"
                   >
                     <div
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-sm"
@@ -251,17 +251,17 @@ export function DashboardAdmin() {
                       {p.nom?.[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-white/85">
+                      <div className="text-sm font-semibold text-foreground">
                         {p.prenom} {p.nom}
                       </div>
-                      <div className="text-[10px] text-white/35 font-mono mt-0.5">
+                      <div className="text-[10px] text-muted-foreground font-mono mt-0.5">
                         {p.telephone ?? "—"} ·{" "}
                         {p.date_naissance
                           ? new Date(p.date_naissance).toLocaleDateString("fr-FR")
                           : "—"}
                       </div>
                     </div>
-                    <ChevronRight className="h-3.5 w-3.5 text-white/20 group-hover:text-white/50 transition" />
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-muted-foreground transition" />
                   </Link>
                 </motion.div>
               ))
@@ -275,9 +275,9 @@ export function DashboardAdmin() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4"
+            className="glass rounded-2xl p-4"
           >
-            <div className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Gestion
             </div>
             <div className="space-y-2">
@@ -289,7 +289,7 @@ export function DashboardAdmin() {
                 <Link
                   key={to}
                   to={to}
-                  className="group flex items-center gap-3 rounded-xl border border-white/7 bg-white/3 px-3.5 py-2.5 transition hover:bg-white/7"
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-secondary/20 px-3.5 py-2.5 transition hover:bg-secondary/50"
                 >
                   <div
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
@@ -297,10 +297,10 @@ export function DashboardAdmin() {
                   >
                     <Icon className="h-3.5 w-3.5" style={{ color }} />
                   </div>
-                  <span className="text-sm text-white/60 group-hover:text-white/85 transition">
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition">
                     {label}
                   </span>
-                  <ChevronRight className="ml-auto h-3.5 w-3.5 text-white/20 group-hover:text-white/50 transition" />
+                  <ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-muted-foreground transition" />
                 </Link>
               ))}
             </div>
@@ -311,9 +311,9 @@ export function DashboardAdmin() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4"
+            className="glass rounded-2xl p-4"
           >
-            <div className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-4">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
               Triage du jour
             </div>
             <div className="space-y-2.5">
@@ -336,13 +336,15 @@ export function DashboardAdmin() {
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1.5">
                         <div className="h-2 w-2 rounded-full" style={{ backgroundColor: col }} />
-                        <span className="text-[11px] font-mono text-white/50 capitalize">{c}</span>
+                        <span className="text-[11px] font-mono text-muted-foreground capitalize">
+                          {c}
+                        </span>
                       </div>
                       <span className="text-[11px] font-mono font-bold" style={{ color: col }}>
                         {count}
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}

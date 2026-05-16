@@ -48,7 +48,7 @@ function StatCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.45 }}
-      className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-5 overflow-hidden"
+      className="glass relative rounded-2xl p-5 overflow-hidden"
     >
       <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: color }} />
       <div
@@ -71,10 +71,10 @@ function StatCard({
         >
           {value}
         </motion.div>
-        <div className="mt-1.5 text-[11px] font-medium text-white/60 uppercase tracking-wider">
+        <div className="mt-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
           {label}
         </div>
-        {sub && <div className="mt-0.5 text-[10px] text-white/30 font-mono">{sub}</div>}
+        {sub && <div className="mt-0.5 text-[10px] text-muted-foreground/60 font-mono">{sub}</div>}
       </div>
     </motion.div>
   );
@@ -99,7 +99,7 @@ function PatientCard({
       transition={{ delay: index * 0.06 }}
       whileHover={{ y: -2, boxShadow: `0 8px 32px ${col}18` }}
       onClick={() => onSelect(p.id)}
-      className="w-full rounded-2xl border border-white/7 bg-white/3 p-4 text-left transition"
+      className="w-full rounded-2xl border border-border bg-secondary/20 p-4 text-left transition hover:bg-secondary/40"
     >
       <div className="flex items-start gap-3">
         <div className="relative shrink-0">
@@ -111,12 +111,12 @@ function PatientCard({
             {p.patient?.nom?.[0]}
           </div>
           <div
-            className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-black/40"
+            className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background"
             style={{ backgroundColor: col }}
           />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-white/85">
+          <div className="text-sm font-semibold text-foreground">
             {p.patient?.prenom} {p.patient?.nom}
           </div>
           <div className="mt-0.5 flex items-center gap-2">
@@ -126,14 +126,14 @@ function PatientCard({
             >
               {p.triage_couleur ?? "—"}
             </span>
-            <span className="text-[10px] text-white/35 font-mono">
+            <span className="text-[10px] text-muted-foreground font-mono">
               {STATUT_LABELS[p.statut] ?? p.statut}
             </span>
           </div>
         </div>
         <div className="shrink-0 text-right">
-          <div className="text-xs font-mono text-white/40">{mins} min</div>
-          <ChevronRight className="h-3.5 w-3.5 text-white/20 mt-1 ml-auto" />
+          <div className="text-xs font-mono text-muted-foreground">{mins} min</div>
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/30 mt-1 ml-auto" />
         </div>
       </div>
     </motion.button>
@@ -176,7 +176,7 @@ export function DashboardMedecin() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="flex items-center gap-3 text-white/40">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <Stethoscope className="h-4 w-4 animate-pulse" style={{ color: PURPLE }} />
           <span className="font-mono text-sm">Chargement du tableau de bord…</span>
         </div>
@@ -194,14 +194,14 @@ export function DashboardMedecin() {
               className="h-2 w-2 rounded-full animate-pulse"
               style={{ backgroundColor: PURPLE }}
             />
-            <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
               Espace médecin
             </span>
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight">
             Dr. <span style={{ color: PURPLE }}>{user?.nom ?? "—"}</span>
           </h1>
-          <p className="mt-1 text-sm text-white/40 font-mono">
+          <p className="mt-1 text-sm text-muted-foreground font-mono">
             {new Date().toLocaleDateString("fr-FR", {
               weekday: "long",
               day: "numeric",
@@ -216,7 +216,7 @@ export function DashboardMedecin() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
           onClick={load}
-          className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3.5 py-2 text-sm text-white/50 hover:text-white/80 transition"
+          className="flex items-center gap-2 glass rounded-xl px-3.5 py-2 text-sm text-muted-foreground hover:text-foreground transition"
         >
           <RefreshCw className="h-3.5 w-3.5" />
         </motion.button>
@@ -265,15 +265,15 @@ export function DashboardMedecin() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="lg:col-span-2 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden"
+          className="lg:col-span-2 glass rounded-2xl overflow-hidden"
         >
-          <div className="flex items-center justify-between border-b border-white/7 px-5 py-3.5">
+          <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
             <div className="flex items-center gap-2.5">
               <div
                 className="h-2 w-2 rounded-full animate-pulse"
                 style={{ backgroundColor: PURPLE }}
               />
-              <span className="text-sm font-semibold text-white/80">Consultations en cours</span>
+              <span className="text-sm font-semibold text-foreground">Consultations en cours</span>
               {consults.length > 0 && (
                 <span
                   className="rounded-full px-2 py-0.5 text-[10px] font-mono border"
@@ -289,7 +289,7 @@ export function DashboardMedecin() {
             </div>
           </div>
 
-          <div className="h-6 border-b border-white/4 opacity-20">
+          <div className="h-6 border-b border-border/40 opacity-20">
             <EkgLine className="w-full h-full" />
           </div>
 
@@ -301,8 +301,10 @@ export function DashboardMedecin() {
                   animate={{ opacity: 1 }}
                   className="flex flex-col items-center justify-center py-14 text-center"
                 >
-                  <Stethoscope className="h-8 w-8 text-white/15 mb-3" />
-                  <p className="text-sm text-white/25 font-mono">Aucune consultation active</p>
+                  <Stethoscope className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground font-mono">
+                    Aucune consultation active
+                  </p>
                 </motion.div>
               ) : (
                 consults.map((p, i) => (
@@ -320,9 +322,9 @@ export function DashboardMedecin() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4"
+            className="glass rounded-2xl p-4"
           >
-            <div className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-4">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
               Répartition statuts
             </div>
             <div className="space-y-2.5">
@@ -340,12 +342,12 @@ export function DashboardMedecin() {
                 return (
                   <div key={label}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-mono text-white/50">{label}</span>
+                      <span className="text-[11px] font-mono text-muted-foreground">{label}</span>
                       <span className="text-[11px] font-mono font-bold" style={{ color }}>
                         {value}
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
@@ -365,9 +367,9 @@ export function DashboardMedecin() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4"
+            className="glass rounded-2xl p-4"
           >
-            <div className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Accès rapides
             </div>
             <div className="space-y-2">
@@ -378,7 +380,7 @@ export function DashboardMedecin() {
                 <Link
                   key={to}
                   to={to}
-                  className="group flex items-center gap-3 rounded-xl border border-white/7 bg-white/3 px-3.5 py-2.5 transition hover:bg-white/7"
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-secondary/20 px-3.5 py-2.5 transition hover:bg-secondary/50"
                 >
                   <div
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
@@ -386,10 +388,10 @@ export function DashboardMedecin() {
                   >
                     <Icon className="h-3.5 w-3.5" style={{ color }} />
                   </div>
-                  <span className="text-sm text-white/60 group-hover:text-white/85 transition">
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition">
                     {label}
                   </span>
-                  <ArrowRight className="ml-auto h-3.5 w-3.5 text-white/20 group-hover:text-white/50 transition" />
+                  <ArrowRight className="ml-auto h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-muted-foreground transition" />
                 </Link>
               ))}
             </div>

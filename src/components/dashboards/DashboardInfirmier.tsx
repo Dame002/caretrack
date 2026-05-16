@@ -66,7 +66,7 @@ function StatCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.45 }}
-      className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-5 overflow-hidden"
+      className="glass relative rounded-2xl p-5 overflow-hidden"
       style={alert ? { boxShadow: `0 0 24px ${color}44` } : undefined}
     >
       <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: color }} />
@@ -93,10 +93,10 @@ function StatCard({
         >
           {value}
         </motion.div>
-        <div className="mt-1.5 text-[11px] font-medium text-white/60 uppercase tracking-wider">
+        <div className="mt-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
           {label}
         </div>
-        {sub && <div className="mt-0.5 text-[10px] text-white/30 font-mono">{sub}</div>}
+        {sub && <div className="mt-0.5 text-[10px] text-muted-foreground/60 font-mono">{sub}</div>}
       </div>
     </motion.div>
   );
@@ -121,9 +121,9 @@ function TriageRow({
       initial={{ opacity: 0, x: -12 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
-      whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.06)" }}
+      whileHover={{ x: 4 }}
       onClick={() => onSelect(p.id)}
-      className="w-full flex items-center gap-3 rounded-xl border border-white/7 bg-white/3 px-4 py-3 text-left transition"
+      className="w-full flex items-center gap-3 rounded-xl border border-border bg-secondary/20 px-4 py-3 text-left transition hover:bg-secondary/40"
       style={
         over ? { borderColor: `${TC.rouge}44`, boxShadow: `0 0 12px ${TC.rouge}22` } : undefined
       }
@@ -133,10 +133,10 @@ function TriageRow({
         style={{ backgroundColor: col, boxShadow: `0 0 8px ${col}` }}
       />
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-white/85 truncate">
+        <div className="text-sm font-semibold text-foreground truncate">
           {p.patient?.prenom} {p.patient?.nom}
         </div>
-        <div className="text-[10px] text-white/35 truncate font-mono mt-0.5">
+        <div className="text-[10px] text-muted-foreground truncate font-mono mt-0.5">
           {p.triage?.symptomes ?? "—"}
         </div>
       </div>
@@ -154,7 +154,7 @@ function TriageRow({
           </motion.div>
         )}
       </div>
-      <ChevronRight className="h-3.5 w-3.5 text-white/20 shrink-0" />
+      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/30 shrink-0" />
     </motion.button>
   );
 }
@@ -166,7 +166,6 @@ export function DashboardInfirmier() {
   const [triage, setTriage] = useState<Passage[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(new Date());
-  const [tick, setTick] = useState(0);
 
   const load = async () => {
     try {
@@ -187,11 +186,7 @@ export function DashboardInfirmier() {
   useEffect(() => {
     load();
     const refresh = setInterval(load, 15_000);
-    const clock = setInterval(() => setTick((t) => t + 1), 1000);
-    return () => {
-      clearInterval(refresh);
-      clearInterval(clock);
-    };
+    return () => clearInterval(refresh);
   }, []);
 
   const alertCount = triage.filter((p) => {
@@ -205,7 +200,7 @@ export function DashboardInfirmier() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="flex items-center gap-3 text-white/40">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <Heart className="h-4 w-4 animate-pulse" style={{ color: CYAN }} />
           <span className="font-mono text-sm">Connexion au SAU…</span>
         </div>
@@ -220,14 +215,14 @@ export function DashboardInfirmier() {
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-2 mb-1">
             <PulseRing color={CYAN} />
-            <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
               Poste infirmier · SAU
             </span>
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight">
             Bonjour, <span className="text-gradient">{user?.prenom ?? "Infirmier(e)"}</span>
           </h1>
-          <p className="mt-1 text-sm text-white/40 font-mono">
+          <p className="mt-1 text-sm text-muted-foreground font-mono">
             {new Date().toLocaleDateString("fr-FR", {
               weekday: "long",
               day: "numeric",
@@ -237,14 +232,13 @@ export function DashboardInfirmier() {
             {lastRefresh.toLocaleTimeString("fr-FR")}
           </p>
         </motion.div>
-
         <div className="flex items-center gap-2 shrink-0">
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
             onClick={load}
-            className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3.5 py-2 text-sm text-white/50 hover:text-white/80 transition"
+            className="flex items-center gap-2 glass rounded-xl px-3.5 py-2 text-sm text-muted-foreground hover:text-foreground transition"
           >
             <RefreshCw className="h-3.5 w-3.5" />
           </motion.button>
@@ -308,12 +302,12 @@ export function DashboardInfirmier() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="lg:col-span-2 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden"
+          className="lg:col-span-2 glass rounded-2xl overflow-hidden"
         >
-          <div className="flex items-center justify-between border-b border-white/7 px-5 py-3.5">
+          <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
             <div className="flex items-center gap-2.5">
               <PulseRing color="var(--triage-orange)" />
-              <span className="text-sm font-semibold text-white/80">File d'attente triage</span>
+              <span className="text-sm font-semibold text-foreground">File d'attente triage</span>
               <AnimatePresence>
                 {triage.length > 0 && (
                   <motion.span
@@ -336,13 +330,13 @@ export function DashboardInfirmier() {
               {(["rouge", "orange", "jaune", "vert"] as const).map((c) => (
                 <div key={c} className="flex items-center gap-1.5">
                   <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: TC[c] }} />
-                  <span className="text-[9px] font-mono text-white/30 capitalize">{c}</span>
+                  <span className="text-[9px] font-mono text-muted-foreground capitalize">{c}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="h-8 border-b border-white/4 opacity-25">
+          <div className="h-8 border-b border-border/50 opacity-25">
             <EkgLine className="w-full h-full" />
           </div>
 
@@ -354,8 +348,10 @@ export function DashboardInfirmier() {
                   animate={{ opacity: 1 }}
                   className="flex flex-col items-center justify-center py-14 text-center"
                 >
-                  <Activity className="h-8 w-8 text-white/15 mb-3" />
-                  <p className="text-sm text-white/25 font-mono">Aucun patient en attente</p>
+                  <Activity className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground font-mono">
+                    Aucun patient en attente
+                  </p>
                 </motion.div>
               ) : (
                 triage.map((p, i) => <TriageRow key={p.id} p={p} onSelect={toTriage} index={i} />)
@@ -371,11 +367,11 @@ export function DashboardInfirmier() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4"
+            className="glass rounded-2xl p-4"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Cpu className="h-3.5 w-3.5 text-white/30" />
-              <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+              <Cpu className="h-3.5 w-3.5 text-muted-foreground/50" />
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Répartition triage
               </span>
             </div>
@@ -392,13 +388,15 @@ export function DashboardInfirmier() {
                           className="h-2 w-2 rounded-full"
                           style={{ backgroundColor: TC[c], boxShadow: `0 0 5px ${TC[c]}` }}
                         />
-                        <span className="text-[11px] font-mono text-white/50 capitalize">{c}</span>
+                        <span className="text-[11px] font-mono text-muted-foreground capitalize">
+                          {c}
+                        </span>
                       </div>
                       <span className="text-[11px] font-mono font-bold" style={{ color: TC[c] }}>
                         {count}
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
@@ -419,7 +417,7 @@ export function DashboardInfirmier() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.35 }}
-              className="rounded-2xl border border-triage-red/30 bg-triage-red/5 backdrop-blur-xl p-4"
+              className="rounded-2xl border border-triage-red/30 bg-triage-red/5 p-4"
               style={{ boxShadow: "0 0 20px var(--triage-red)22" }}
             >
               <div className="flex items-center gap-2 mb-3">
@@ -441,7 +439,7 @@ export function DashboardInfirmier() {
                       onClick={() => toTriage(p.id)}
                       className="w-full flex items-center justify-between rounded-lg bg-triage-red/10 border border-triage-red/20 px-3 py-2 text-left"
                     >
-                      <span className="text-xs font-medium text-white/80">
+                      <span className="text-xs font-medium text-foreground">
                         {p.patient?.prenom} {p.patient?.nom}
                       </span>
                       <span className="text-xs font-mono text-triage-red">
@@ -458,9 +456,9 @@ export function DashboardInfirmier() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4"
+            className="glass rounded-2xl p-4"
           >
-            <div className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Actions rapides
             </div>
             <div className="space-y-2">
@@ -477,7 +475,7 @@ export function DashboardInfirmier() {
                 <Link
                   key={to}
                   to={to}
-                  className="group flex items-center gap-3 rounded-xl border border-white/7 bg-white/3 px-3.5 py-2.5 transition hover:bg-white/7 hover:border-white/15"
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-secondary/20 px-3.5 py-2.5 transition hover:bg-secondary/50"
                 >
                   <div
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition group-hover:scale-110"
@@ -485,10 +483,10 @@ export function DashboardInfirmier() {
                   >
                     <Icon className="h-3.5 w-3.5" style={{ color }} />
                   </div>
-                  <span className="text-sm text-white/60 group-hover:text-white/85 transition">
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition">
                     {label}
                   </span>
-                  <ChevronRight className="ml-auto h-3.5 w-3.5 text-white/20 group-hover:text-white/50 transition" />
+                  <ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-muted-foreground transition" />
                 </Link>
               ))}
             </div>

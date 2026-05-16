@@ -33,11 +33,9 @@ function AnimatedNumber({ value, color }: { value: number; color: string }) {
   const spring = useSpring(motionVal, { stiffness: 60, damping: 20 });
   const display = useTransform(spring, (v) => Math.round(v).toString());
   const ref = useRef<HTMLSpanElement>(null);
-
   useEffect(() => {
     motionVal.set(value);
   }, [value, motionVal]);
-
   return (
     <motion.span ref={ref} style={{ color }}>
       {display}
@@ -68,7 +66,7 @@ function KpiCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.55 }}
       whileHover={{ y: -4, boxShadow: `0 16px 48px ${color}22` }}
-      className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-6 overflow-hidden cursor-default"
+      className="glass relative rounded-2xl p-6 overflow-hidden cursor-default"
     >
       <div
         className="absolute top-0 left-0 right-0 h-0.5"
@@ -78,7 +76,6 @@ function KpiCard({
         className="pointer-events-none absolute -bottom-8 -right-8 h-32 w-32 rounded-full opacity-8 blur-2xl"
         style={{ background: color }}
       />
-
       <div className="flex items-center justify-between mb-6">
         <div
           className="flex h-10 w-10 items-center justify-center rounded-xl"
@@ -86,17 +83,16 @@ function KpiCard({
         >
           <Icon className="h-5 w-5" style={{ color }} />
         </div>
-        <Eye className="h-3.5 w-3.5 text-white/15" />
+        <Eye className="h-3.5 w-3.5 text-muted-foreground/30" />
       </div>
-
       <div className="font-mono text-4xl font-bold leading-none">
         <AnimatedNumber value={value} color={color} />
-        {unit && <span className="text-lg text-white/30 ml-1 font-normal">{unit}</span>}
+        {unit && <span className="text-lg text-muted-foreground/50 ml-1 font-normal">{unit}</span>}
       </div>
-      <div className="mt-2 text-[11px] font-semibold text-white/50 uppercase tracking-wider">
+      <div className="mt-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
         {label}
       </div>
-      {sub && <div className="mt-1 text-[10px] text-white/25 font-mono">{sub}</div>}
+      {sub && <div className="mt-1 text-[10px] text-muted-foreground/60 font-mono">{sub}</div>}
     </motion.div>
   );
 }
@@ -104,8 +100,8 @@ function KpiCard({
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-white/10 bg-black/80 backdrop-blur-xl px-3 py-2 text-xs font-mono">
-      <div className="text-white/50 mb-1 capitalize">{label}</div>
+    <div className="glass rounded-xl px-3 py-2 text-xs font-mono">
+      <div className="text-muted-foreground mb-1 capitalize">{label}</div>
       <div className="font-bold" style={{ color: payload[0]?.fill }}>
         {payload[0]?.value} patients
       </div>
@@ -140,7 +136,7 @@ export function DashboardDirection() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="flex items-center gap-3 text-white/40">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <BarChart3 className="h-4 w-4 animate-pulse" style={{ color: GOLD }} />
           <span className="font-mono text-sm">Chargement des indicateurs…</span>
         </div>
@@ -168,14 +164,14 @@ export function DashboardDirection() {
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-2 mb-1">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: GOLD }} />
-            <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
               Vue Direction · Lecture seule
             </span>
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight">
             Tableau de bord <span style={{ color: GOLD }}>Direction</span>
           </h1>
-          <p className="mt-1 text-sm text-white/40 font-mono">
+          <p className="mt-1 text-sm text-muted-foreground font-mono">
             {new Date().toLocaleDateString("fr-FR", {
               weekday: "long",
               day: "numeric",
@@ -190,7 +186,7 @@ export function DashboardDirection() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
           onClick={load}
-          className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3.5 py-2 text-sm text-white/50 hover:text-white/80 transition"
+          className="flex items-center gap-2 glass rounded-xl px-3.5 py-2 text-sm text-muted-foreground hover:text-foreground transition"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Actualiser
@@ -227,10 +223,10 @@ export function DashboardDirection() {
           icon={TrendingUp}
           label="Taux d'occupation"
           value={tauxOccupation}
-          unit="%"
           sub="consultations / passages"
           color={CYAN}
           delay={0.2}
+          unit="%"
         />
       </div>
 
@@ -241,11 +237,11 @@ export function DashboardDirection() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-5 overflow-hidden"
+          className="glass rounded-2xl p-5 overflow-hidden"
         >
           <div className="flex items-center gap-2 mb-6">
             <BarChart3 className="h-4 w-4" style={{ color: GOLD }} />
-            <span className="text-sm font-semibold text-white/70">
+            <span className="text-sm font-semibold text-foreground">
               Répartition par niveau de triage
             </span>
           </div>
@@ -255,15 +251,19 @@ export function DashboardDirection() {
                 dataKey="name"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "monospace" }}
+                tick={{
+                  fill: "var(--color-muted-foreground)",
+                  fontSize: 11,
+                  fontFamily: "monospace",
+                }}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 10 }}
+                tick={{ fill: "var(--color-muted-foreground)", fontSize: 10 }}
                 width={24}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(128,128,128,0.05)" }} />
               <Bar dataKey="total" radius={[6, 6, 0, 0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -278,11 +278,13 @@ export function DashboardDirection() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-5"
+          className="glass rounded-2xl p-5"
         >
           <div className="flex items-center gap-2 mb-6">
             <Clock className="h-4 w-4" style={{ color: GOLD }} />
-            <span className="text-sm font-semibold text-white/70">Indicateurs de performance</span>
+            <span className="text-sm font-semibold text-foreground">
+              Indicateurs de performance
+            </span>
           </div>
           <div className="space-y-4">
             {[
@@ -320,17 +322,19 @@ export function DashboardDirection() {
                 <div key={label}>
                   <div className="flex items-center justify-between mb-1.5">
                     <div>
-                      <span className="text-[11px] font-semibold text-white/60">{label}</span>
-                      <span className="ml-2 text-[10px] text-white/25 font-mono">{desc}</span>
+                      <span className="text-[11px] font-semibold text-foreground">{label}</span>
+                      <span className="ml-2 text-[10px] text-muted-foreground font-mono">
+                        {desc}
+                      </span>
                     </div>
                     <div className="flex items-baseline gap-1">
                       <span className="text-sm font-mono font-bold" style={{ color }}>
                         {value}
                       </span>
-                      <span className="text-[10px] text-white/25 font-mono">/ {max}</span>
+                      <span className="text-[10px] text-muted-foreground font-mono">/ {max}</span>
                     </div>
                   </div>
-                  <div className="h-2 rounded-full bg-white/8 overflow-hidden">
+                  <div className="h-2 rounded-full bg-secondary/50 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
@@ -351,13 +355,13 @@ export function DashboardDirection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="flex items-center justify-between rounded-xl border border-white/7 bg-white/2 px-5 py-3"
+        className="flex items-center justify-between rounded-xl border border-border bg-secondary/20 px-5 py-3"
       >
-        <div className="flex items-center gap-2 text-[11px] font-mono text-white/25">
+        <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
           <Eye className="h-3 w-3" />
           Accès lecture seule · Direction
         </div>
-        <div className="text-[11px] font-mono text-white/20">
+        <div className="text-[11px] font-mono text-muted-foreground/60">
           Actualisation automatique toutes les 60s
         </div>
       </motion.div>
